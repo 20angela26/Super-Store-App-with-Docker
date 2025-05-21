@@ -137,7 +137,7 @@ para acceder como root utilice el siguiente comado:
 sudo -i
 ```
 
-### Node.js (Servidor Ubuntu)
+## Node.js (Servidor Ubuntu)
 
 
 
@@ -194,5 +194,46 @@ Ejecuta el siguiente comando para iniciar la configuración segura de MySQL:
 **Durante la configuración**:
 Cambia nuevamente la contraseña del usuario root si se solicita.
 
-### Docker :whale:
+## Docker :whale:
+Este procedimiento debe realizarse en ambas máquinas: servidorUbuntu y clienteUbuntu.
+
+🔧  **Eliminar versiones anteriores de Docker
+Antes de instalar Docker, elimine cualquier versión anterior:**
+
+    for pkg in docker.io docker-doc docker-compose docker-compose-v2 podman-docker containerd runc; do 
+        sudo apt-get remove -y $pkg
+    done
+🔑  **Agregar la clave GPG oficial de Docker**
+
+    sudo apt-get update
+    sudo apt-get install -y ca-certificates curl
+    sudo install -m 0755 -d /etc/apt/keyrings
+    sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+    sudo chmod a+r /etc/apt/keyrings/docker.asc
+
+📦 **Agregar el repositorio de Docker a las fuentes de APT**
+    echo \
+      "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
+      $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+      sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+	 
+    sudo apt-get update
+🚀  **Instalar Docker Engine**
+
+    sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+⚙️  **Docker Compose**
+Docker Compose también debe estar disponible en ambas máquinas (servidorPiccoling y clientePiccoling).
+
+✅ **Verificar la instalación de Docker Compose**
+    docker compose version
+📝 Configurar Vim para trabajar con archivos YAML
+Cree el archivo de configuración de Vim si no existe:
+
+
+**vim ~/.vimrc**
+Agregue la siguiente configuración para mejorar la edición de archivos .yaml y .yml:
+
+    " Configuración para trabajar con archivos YAML
+    au! BufNewFile,BufReadPost *.{yaml,yml} set filetype=yaml foldmethod=indent
+    autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab
 
