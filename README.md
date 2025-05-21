@@ -27,19 +27,19 @@ Para recrear este proyecto correctamente, asegúrese de seguir los pasos de inst
 
 
 
-## 1. Requisitos Previos
+###  Requisitos Previos
 
-### 1.1 Instalación de VirtualBox  
+###  Instalación de VirtualBox  
 Descargue e instale la última versión de **VirtualBox** desde el siguiente enlace:  
 👉 [https://www.virtualbox.org/wiki/Downloads](https://www.virtualbox.org/wiki/Downloads)
 
 La instalación puede realizarse utilizando los valores predeterminados, sin necesidad de configuración adicional.
 
-### 1.2 Instalación de Vagrant  
+###  Instalación de Vagrant  
 Descargue e instale la última versión de **Vagrant** desde el siguiente enlace:  
 👉 [https://releases.hashicorp.com/vagrant/](https://releases.hashicorp.com/vagrant/)
 
-### 1.3 Instalación del Plugin `vbguest`  
+###  Instalación del Plugin `vbguest`  
 Para asegurar que las *Guest Additions* de VirtualBox se mantengan actualizadas, instale el siguiente plugin ejecutando:
 
 ```bash
@@ -50,7 +50,7 @@ Este plugin mejora el rendimiento e integración entre la máquina anfitriona y 
 
 
 
-## 2. Configuración y Creación de las Máquinas Virtuales
+## Configuración y Creación de las Máquinas Virtuales
 
 Este entorno de desarrollo utiliza dos máquinas virtuales: una para el **cliente** y otra para el **servidor**.
 
@@ -352,12 +352,12 @@ Luego, inicia el worker en cada máquina (incluyendo el cliente si deseas que ta
 Accede a la interfaz web de Spark para verificar los nodos conectados:
 📍 http://192.168.100.3:8080
 
-### 🐍 Instalación de Python, PIP y Librerías Necesarias
+##: 🐍 Instalación de Python, PIP y Librerías Necesarias
 Para interactuar con Apache Spark desde Python, especialmente mediante PySpark, es necesario tener Python 3, PIP y algunas librerías instaladas en el sistema.
 
 Sigue los pasos a continuación en ambas máquinas (ServidorUbuntu y ClienteUbuntu).
 
-##### Instalación de Python 3 y PIP
+### Instalación de Python 3 y PIP
 Ejecuta los siguientes comandos para asegurarte de tener Python 3 y el gestor de paquetes pip instalados:
 
 
@@ -369,7 +369,7 @@ Ejecuta los siguientes comandos para asegurarte de tener Python 3 y el gestor de
     sudo apt-get install -y python3-pip
 Nota: Asegúrate de usar python3-pip para instalar la versión compatible con Python 3.
 
-##### Instalación de Librerías Python
+### Instalación de Librerías Python
 A continuación, instalamos las bibliotecas requeridas para trabajar con Spark y bases de datos desde Python:
 
 - PySpark
