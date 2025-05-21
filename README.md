@@ -168,14 +168,14 @@ Ejecuta el siguiente comando en la terminal:
 ```bash
 sudo apt-get install mysql-server
 ```
-#####Iniciar el servicio de MySQL
+##### Iniciar el servicio de MySQL
 Una vez instalado, inicia el servicio con:
 
 ```bash
 sudo systemctl start mysql.service
 ```
 
-#####Corregir un bug de la versión actual
+##### Corregir un bug de la versión actual
 Antes de ejecutar la herramienta de configuración segura, es necesario corregir un bug presente en la versión más reciente. Para ello, accede al entorno de MySQL:
 
      sudo mysql
@@ -187,9 +187,9 @@ Sal del entorno de MySQL con:
 
     exit
 
-#####Configurar la instalación segura
+##### Configurar la instalación segura
 Ejecuta el siguiente comando para iniciar la configuración segura de MySQL:
 
     sudo mysql_secure_installation
-Durante la configuración:
+**Durante la configuración**:
 Cambia nuevamente la contraseña del usuario root si se solicita.
