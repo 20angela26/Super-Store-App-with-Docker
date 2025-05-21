@@ -212,11 +212,12 @@ Antes de instalar Docker, elimine cualquier versión anterior:**
     sudo chmod a+r /etc/apt/keyrings/docker.asc
 
 📦 **Agregar el repositorio de Docker a las fuentes de APT**
+    ```bash
     echo \
       "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
       $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
       sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-	 
+    ```
     sudo apt-get update
 🚀  **Instalar Docker Engine**
 
