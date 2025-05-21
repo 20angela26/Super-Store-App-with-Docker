@@ -149,7 +149,7 @@ sudo -i
 
 #### Pasos de Instalación
 
-###### 1. Actualizar el sistema e instalar dependencias
+###### Actualizar el sistema e instalar dependencias
 
 
     sudo apt-get update
@@ -193,3 +193,6 @@ Ejecuta el siguiente comando para iniciar la configuración segura de MySQL:
     sudo mysql_secure_installation
 **Durante la configuración**:
 Cambia nuevamente la contraseña del usuario root si se solicita.
+
+### Docker :whale2:
+
