@@ -1,0 +1,127 @@
+[
+    {
+        "producto_mas_vendido_valor": {
+            "producto": "Canon imageCLASS 2200 Advanced Copier",
+            "ventas_totales": 61599.82
+        },
+        "producto_mas_vendido_unidades": {
+            "producto": "\"Tennsco Stur-D-Stor Boltless Shelving, 5 Shelves, 24\"\" Deep",
+            "unidades_vendidas": 4381
+        },
+        "producto_mas_rentable": {
+            "producto": "Canon imageCLASS 2200 Advanced Copier",
+            "ganancia_total": 5039.99
+        },
+        "ciudad_mas_ventas": {
+            "ciudad": "New York City",
+            "ventas_totales": 255248.97
+        },
+        "ano_menos_ventas": {
+            "ano": 2015,
+            "ventas_totales": 464426.24
+        },
+        "ano_mas_ventas": {
+            "ano": 2017,
+            "ventas_totales": 724994.56
+        },
+        "producto_mayor_descuento": {
+            "producto": "Holmes Replacement Filter for HEPA Air Cleaner, Very Large Room, HEPA Filter",
+            "precio_original": 68.81,
+            "descuento_porcentaje": 80.0,
+            "precio_con_descuento": 13.76
+        },
+        "producto_menor_descuento": {
+            "producto": "Novimex Turbo Task Chair",
+            "unidades_vendidas": 5,
+            "descuento_porcentaje": 10.0
+        },
+        "top5_productos_cantidad": [
+            {
+                "producto": "Staples",
+                "unidades": 133,
+                "ventas": 430.4,
+                "descuento_promedio_porcentaje": 20.0
+            },
+            {
+                "producto": "GBC Premium Transparent Covers with Diagonal Lined Pattern",
+                "unidades": 67,
+                "ventas": 780.46,
+                "descuento_promedio_porcentaje": 40.0
+            },
+            {
+                "producto": "Storex Dura Pro Binders",
+                "unidades": 57,
+                "ventas": 195.43,
+                "descuento_promedio_porcentaje": 55.38
+            },
+            {
+                "producto": "Global Wood Trimmed Manager's Task Chair, Khaki",
+                "unidades": 53,
+                "ventas": 3621.0,
+                "descuento_promedio_porcentaje": 24.62
+            },
+            {
+                "producto": "Situations Contoured Folding Chairs, 4/Set",
+                "unidades": 53,
+                "ventas": 2860.49,
+                "descuento_promedio_porcentaje": 22.5
+            }
+        ],
+        "cliente_mas_compro": {
+            "cliente": "Sean Miller",
+            "ciudad": "Jacksonville",
+            "total_comprado": 23661.23
+        },
+        "mes_con_mas_ventas": {
+            "mes": 11,
+            "total_ventas": 348834.56
+        },
+        "temporada_con_mas_ventas": {
+            "temporada": "Otoño/Primavera",
+            "total_ventas": 2272449.86
+        },
+        "ciudad_con_mas_ventas": {
+            "ciudad": "New York City",
+            "total_ventas": 255248.97
+        },
+        "productos_con_ganancia_negativa": [
+            {
+                "producto": "Bretford CR4500 Series Slim Rectangular Table",
+                "ganancia": -383.03,
+                "fecha": "2015-10-11"
+            },
+            {
+                "producto": "Holmes Replacement Filter for HEPA Air Cleaner, Very Large Room, HEPA Filter",
+                "ganancia": -123.86,
+                "fecha": "2015-11-22"
+            },
+            {
+                "producto": "Storex DuraTech Recycled Plastic Frosted Binders",
+                "ganancia": -3.82,
+                "fecha": "2015-11-22"
+            },
+            {
+                "producto": "Global Deluxe Stacking Chair, Gray",
+                "ganancia": -1.02,
+                "fecha": "2017-07-16"
+            },
+            {
+                "producto": "Riverside Palais Royal Lawyers Bookcase, Royale Cherry Finish",
+                "ganancia": -1665.05,
+                "fecha": "2015-09-17"
+            }
+        ],
+        "region_con_mayor_descuento": {
+            "region": "West",
+            "promedio_descuento": 1268.22
+        },
+        "region_con_mas_unidades": {
+            "region": "West",
+            "total_unidades": 21978
+        },
+        "categoria_con_mas_ventas": {
+            "categoria": "Technology",
+            "total_ventas": 835900.07
+        }
+    }
+]

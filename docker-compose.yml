@@ -1,0 +1,97 @@
+version: '3.8'
+services:
+  usuarios:
+    image: angelaruiz2006/super-store-usuarios
+    ports:
+      - "3009:3009"
+    networks:
+      - app-network
+    deploy:
+      replicas: 2
+    environment:
+      MYSQL_HOST: mysql
+      MYSQL_USER: root
+      MYSQL_PASSWORD: password
+      MYSQL_DATABASE: usuariosbd
+
+  productos:
+    image: angelaruiz2006/super-store-productos
+    ports:
+      - "3001:3001"
+    networks:
+      - app-network
+    deploy:
+      replicas: 3
+
+  ordenes:
+    image: angelaruiz2006/super-store-ordenes
+    ports:
+      - "3010:3010"
+    networks:
+      - app-network
+    environment:
+      PRODUCTS_URL: "http://productos:3001"
+      CART_URL: "http://carrito:3308"
+    deploy:
+      replicas: 3
+
+  carrito:
+    image: angelaruiz2006/super-store-carrito
+    ports:
+      - "3308:3308"
+    networks:
+      - app-network
+    environment:
+      USUARIOS_URL: "http://usuarios:3009"
+      PRODUCTS_URL: "http://productos:3001"
+    deploy:
+      replicas: 3
+
+  frontend:
+    image: angelaruiz2006/super-store-front
+    ports:
+      - "8080:80"
+    networks:
+      - app-network
+    deploy:
+      replicas: 2
+
+  mysql:
+    image: angelaruiz2006/super-store-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+    volumes:
+      - mysql-data:/var/lib/mysql
+    ports:
+      - "3307:3306"
+    networks:
+      - app-network
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+      restart_policy:
+        condition: on-failure
+        max_attempts: 3
+
+  servidor:
+    image: angelaruiz2006/super-store-servidor
+    ports:
+      - "3020:3020"
+    networks:
+      - app-network
+    deploy:
+      replicas: 2
+    environment:
+      FLASK_ENV: production
+
+networks:
+  app-network:
+    driver: overlay
+
+volumes:
+  mysql-data:
+    driver: local
+
