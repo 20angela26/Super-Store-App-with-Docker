@@ -402,14 +402,14 @@ python3 -c "import pymysql; print('PyMySQL instalado correctamente')"
 A continuación, se presenta una guía paso a paso para poner en funcionamiento correctamente la aplicación **Super-Store App**.
 
 
-Este repositorio contiene una aplicación completa de Super Store implementada con arquitectura de microservicios y desplegada usando Docker Compose. El sistema consta de múltiples servicios interconectados incluyendo frontend, microservicios backend y una base de datos MySQL, todos orquestados para alta disponibilidad y escalabilidad.
+Este repositorio contiene una aplicación completa de Super-Store implementada con arquitectura de microservicios y desplegada usando Docker Compose. El sistema consta de múltiples servicios interconectados incluyendo frontend, microservicios backend y una base de datos MySQL, todos orquestados para alta disponibilidad y escalabilidad.
 
 **Arquitectura Del Sistema**
 La aplicación sigue un patrón de diseño de microservicios con los siguientes componentes:
 
 **Frontend(super-store-front):** Aplicación PHP/JS que sirve la interfaz de usuario (puerto 8080)
-**
-Microservicios Backend(super-store-back):**
+
+**Microservicios Backend(super-store-back):**
 
 Servicio de Usuarios (puerto 3009)
 
@@ -421,7 +421,7 @@ Servicio de Carrito de Compras (puerto 3308)
 
 **Servicios de Datos:**
 
-**Base de datos MySQL (init.sql) **(puerto 3307)
+**Base de datos MySQL (init.sql)**(puerto 3307)
 
 **Servidor de Análisis** (API Flask en puerto 3020)
 
