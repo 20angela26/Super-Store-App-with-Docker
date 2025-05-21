@@ -131,6 +131,12 @@ o
 ```bash
 vagrant ssh clienteUbuntu
 ```
+
+para acceder como root utilize el siguiente comado:
+```bash
+sudo -i
+```
+
 ### Node.js (Servidor Ubuntu)
 
 
