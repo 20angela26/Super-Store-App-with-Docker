@@ -389,5 +389,6 @@ Para asegurarte de que las librerías se han instalado correctamente, puedes eje
 
 
 
+
     python3 -c "import pyspark; print('PySpark instalado correctamente')"
-    python3 -c "import pymysql; print('PyMySQL instalado correctamente')
+    python3 -c "import pymysql; print('PyMySQL instalado correctamente')"
