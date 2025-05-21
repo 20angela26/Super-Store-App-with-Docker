@@ -375,14 +375,16 @@ A continuación, instalamos las bibliotecas requeridas para trabajar con Spark y
 - PySpark
 Instala el paquete que permite ejecutar código Spark desde Python:
 
-
+```bash
     sudo pip3 install pyspark
+```
 - PyMySQL
 Este paquete permite interactuar con bases de datos MySQL desde Python:
 
 
-
+```bash
     pip3 install pymysql
+```
 ✅ Verificación
 Para asegurarte de que las librerías se han instalado correctamente, puedes ejecutar:
 
