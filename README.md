@@ -352,4 +352,42 @@ Luego, inicia el worker en cada máquina (incluyendo el cliente si deseas que ta
 Accede a la interfaz web de Spark para verificar los nodos conectados:
 📍 http://192.168.100.3:8080
 
+### 🐍 Instalación de Python, PIP y Librerías Necesarias
+Para interactuar con Apache Spark desde Python, especialmente mediante PySpark, es necesario tener Python 3, PIP y algunas librerías instaladas en el sistema.
 
+Sigue los pasos a continuación en ambas máquinas (ServidorUbuntu y ClienteUbuntu).
+
+##### Instalación de Python 3 y PIP
+Ejecuta los siguientes comandos para asegurarte de tener Python 3 y el gestor de paquetes pip instalados:
+
+
+
+    sudo apt-get update
+	
+    sudo apt-get install -y python3
+	
+    sudo apt-get install -y python3-pip
+Nota: Asegúrate de usar python3-pip para instalar la versión compatible con Python 3.
+
+##### Instalación de Librerías Python
+A continuación, instalamos las bibliotecas requeridas para trabajar con Spark y bases de datos desde Python:
+
+- PySpark
+Instala el paquete que permite ejecutar código Spark desde Python:
+
+
+    sudo pip3 install pyspark
+- PyMySQL
+Este paquete permite interactuar con bases de datos MySQL desde Python:
+
+
+
+    pip3 install pymysql
+✅ Verificación
+Para asegurarte de que las librerías se han instalado correctamente, puedes ejecutar:
+
+
+
+
+    python3 -c "import pyspark; print('PySpark instalado correctamente')"
+    python3 -c "import pymysql; print('PyMySQL instalado correctamente')
