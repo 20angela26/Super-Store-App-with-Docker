@@ -131,5 +131,22 @@ o
 ```bash
 vagrant ssh clienteUbuntu
 ```
+### Node.js (Servidor Ubuntu)
 
+
+
+###### Requisitos Previos
+
+- Acceso administrativo (sudo) en el servidor
+- Conexión a Internet estable
+- Ubuntu 18.04/20.04/22.04 LTS
+
+#### Pasos de Instalación
+
+###### 1. Actualizar el sistema e instalar dependencias
+
+
+    sudo apt-get update
+    sudo apt-get upgrade -y
+    sudo apt-get install curl gnupg2 gnupg ca-certificates -y
 
