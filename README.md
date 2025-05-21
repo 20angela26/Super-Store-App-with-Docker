@@ -157,52 +157,39 @@ sudo -i
     sudo apt-get install curl gnupg2 gnupg ca-certificates -y
 
 
-
-## 2. Instalación y Configuración de MySQL
+## Instalación y Configuración de MySQL
 
 Para instalar MySQL en el sistema, sigue los siguientes pasos:
 
-### Paso 1: Instalar el servidor MySQL
+##### **Instalar el servidor MySQL**
 
 Ejecuta el siguiente comando en la terminal:
 
 ```bash
 sudo apt-get install mysql-server
-Paso 2: Iniciar el servicio de MySQL
+```
+#####Iniciar el servicio de MySQL
 Una vez instalado, inicia el servicio con:
 
-bash
-Copiar
-Editar
+```bash
 sudo systemctl start mysql.service
-Paso 3: Corregir un bug de la versión actual
+```
+
+#####Corregir un bug de la versión actual
 Antes de ejecutar la herramienta de configuración segura, es necesario corregir un bug presente en la versión más reciente. Para ello, accede al entorno de MySQL:
 
-bash
-Copiar
-Editar
-sudo mysql
+     sudo mysql
 Luego, ejecuta el siguiente comando para permitir el cambio de contraseña del usuario root:
 
-sql
-Copiar
-Editar
-ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'password';
+
+    ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'password';
 Sal del entorno de MySQL con:
 
-sql
-Copiar
-Editar
-exit
-Paso 4: Configurar la instalación segura
+    exit
+
+#####Configurar la instalación segura
 Ejecuta el siguiente comando para iniciar la configuración segura de MySQL:
 
-bash
-Copiar
-Editar
-sudo mysql_secure_installation
+    sudo mysql_secure_installation
 Durante la configuración:
-
 Cambia nuevamente la contraseña del usuario root si se solicita.
-
-A todas las demás preguntas, responde con yes para aplicar las configuraciones recomendadas de seguridad.
