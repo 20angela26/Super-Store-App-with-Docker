@@ -352,7 +352,7 @@ Luego, inicia el worker en cada máquina (incluyendo el cliente si deseas que ta
 Accede a la interfaz web de Spark para verificar los nodos conectados:
 📍 http://192.168.100.3:8080
 
-##: 🐍 Instalación de Python, PIP y Librerías Necesarias
+# 🐍 Instalación de Python, PIP y Librerías Necesarias
 Para interactuar con Apache Spark desde Python, especialmente mediante PySpark, es necesario tener Python 3, PIP y algunas librerías instaladas en el sistema.
 
 Sigue los pasos a continuación en ambas máquinas (ServidorUbuntu y ClienteUbuntu).
