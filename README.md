@@ -397,3 +397,7 @@ python3 -c "import pyspark; print('PySpark instalado correctamente')"
 python3 -c "import pymysql; print('PyMySQL instalado correctamente')"
 ```
 
+# Inicio de la Aplicación Super-Store App
+
+A continuación, se presenta una guía paso a paso para poner en funcionamiento correctamente la aplicación **Super-Store App**.
+
