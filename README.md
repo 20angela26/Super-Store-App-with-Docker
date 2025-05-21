@@ -194,5 +194,5 @@ Ejecuta el siguiente comando para iniciar la configuración segura de MySQL:
 **Durante la configuración**:
 Cambia nuevamente la contraseña del usuario root si se solicita.
 
-### Docker :whale2:
+### Docker :whale:
 
