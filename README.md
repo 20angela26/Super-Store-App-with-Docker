@@ -1,5 +1,5 @@
 # SUPER STORE APP WEB
-Esta aplicación es una plataforma de compras desarrollada con una arquitectura basada en microservicios. Está diseñada para gestionar dos tipos de usuarios: clientes y administradores, cada uno con permisos y funcionalidades específicas.
+Esta aplicación es una plataforma de compras desarrollada con una arquitectura basada en microservicios. Está diseñada para gestionar dos tipos de usuarios:  ** clientes ** y ** administradores **, cada uno con permisos y funcionalidades específicas.
 
 El objetivo principal de la aplicación es permitir que los usuarios realicen compras de forma fácil y organizada. Los usuarios convencionales pueden:
 - Ver los productos disponibles en la tienda.
