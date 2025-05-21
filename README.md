@@ -241,7 +241,7 @@ Agregue la siguiente configuración para mejorar la edición de archivos .yaml y
     au! BufNewFile,BufReadPost *.{yaml,yml} set filetype=yaml foldmethod=indent
     autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab
 
-#### Instalación y Configuración de Apache Spark en Entorno Distribuido (ServidorUbuntu y ClienteUbuntu) 💫
+### Instalación y Configuración de Apache Spark en Entorno Distribuido (ServidorUbuntu y ClienteUbuntu) 💫
 Este documento describe paso a paso cómo instalar y configurar Apache Spark 3.5.1 sobre Hadoop 3 en dos máquinas Ubuntu. La configuración está diseñada para ejecutar Spark en modo standalone distribuido, con una máquina actuando como Spark Master y otra como Spark Worker.
 
 **Requisitos Previos**
