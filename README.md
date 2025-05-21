@@ -241,3 +241,115 @@ Agregue la siguiente configuración para mejorar la edición de archivos .yaml y
     au! BufNewFile,BufReadPost *.{yaml,yml} set filetype=yaml foldmethod=indent
     autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab
 
+##### Instalación y Configuración de Apache Spark en Entorno Distribuido (ServidorUbuntu y ClienteUbuntu) 💫
+Este documento describe paso a paso cómo instalar y configurar Apache Spark 3.5.1 sobre Hadoop 3 en dos máquinas Ubuntu. La configuración está diseñada para ejecutar Spark en modo standalone distribuido, con una máquina actuando como Spark Master y otra como Spark Worker.
+
+**Requisitos Previos**
+
+- Dos máquinas Ubuntu con conexión de red entre ellas.
+
+- Acceso root o permisos de sudo.
+
+- Conectividad entre las IPs:
+
+- ServidorUbuntu: 192.168.100.2
+
+- ClienteUbuntu: 192.168.100.3
+
+##### Actualización de Paquetes e Instalación de Java
+Apache Spark requiere una máquina virtual de Java para funcionar. En ambas máquinas, ejecuta los siguientes comandos:
+
+
+    sudo apt update
+    sudo apt install -y openjdk-18-jdk
+#####  Configuración de Variables de Entorno para Java
+Para facilitar el acceso a Java desde cualquier lugar del sistema, creamos un archivo de configuración persistente:
+
+
+
+    cat <<EOF | sudo tee /etc/profile.d/jdk18.sh
+    export JAVA_HOME=/usr/lib/jvm/java-1.18.0-openjdk-amd64
+    export PATH=\$PATH:\$JAVA_HOME/bin
+    EOF
+Aplica la configuración inmediatamente:
+
+
+
+    source /etc/profile.d/jdk18.sh
+Puedes verificar que Java esté correctamente instalado con:
+
+
+
+
+    java  -version
+#####  Preparar el Entorno para Spark
+En ambas máquinas, crea un directorio dedicado para almacenar los archivos de Apache Spark:
+
+
+
+    mkdir labSpark
+    cd labSpark
+ Descargar y Descomprimir Apache Spark
+Descargamos la versión deseada de Spark  en este caso, 3.5.5 con soporte para Hadoop :
+
+
+
+    wget https://dlcdn.apache.org/spark/spark-3.5.5/spark-3.5.5-bin-hadoop3.tgz
+Procede a descomprimir el archivo:
+
+
+
+    
+    tar -xvzf spark-3.5.1-bin-hadoop3.tgz
+######  Configuración del Entorno de Spark
+Accede al directorio de configuración de Spark:
+
+
+
+
+    cd spark-3.5.1-bin-hadoop3/conf/
+Copia la plantilla de configuración para editarla:
+
+
+
+    cp spark-env.sh.template spark-env.sh
+Abre el archivo spark-env.sh con tu editor favorito:
+
+
+
+
+    vim spark-env.sh
+Agrega las siguientes variables de entorno al final del archivo, según el rol de cada máquina:
+
+En ClienteUbuntu (Máster)
+
+
+
+    SPARK_LOCAL_IP=192.168.100.3
+    SPARK_MASTER_HOST=192.168.100.3
+En ClienteUbuntu (Worker)
+
+
+    
+    SPARK_LOCAL_IP=192.168.100.2
+    SPARK_MASTER_HOST=192.168.100.3
+Nota: SPARK_MASTER_HOST debe apuntar a la IP del nodo maestro desde ambas máquinas.
+
+✅ Próximos pasos
+Una vez completada la configuración en ambas máquinas:
+
+Puedes iniciar el servidor maestro ejecutando en ClienteUbuntu:
+
+
+
+
+    ./sbin/start-master.sh
+Luego, inicia el worker en cada máquina (incluyendo el cliente si deseas que también trabaje como worker):
+
+
+
+    ./sbin/start-worker.sh spark://192.168.100.3:7077
+Accede a la interfaz web de Spark para verificar los nodos conectados:
+📍 http://192.168.100.3:8080
+
+
