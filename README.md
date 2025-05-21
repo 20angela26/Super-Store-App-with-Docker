@@ -25,7 +25,7 @@ Acceder a un panel de estadísticas para analizar el desempeño general de la ti
 
 Para recrear este proyecto correctamente, asegúrese de seguir los pasos de instalación detallados a continuación.
 
----
+
 
 ## 1. Requisitos Previos
 
@@ -48,7 +48,7 @@ vagrant plugin install vagrant-vbguest
 
 Este plugin mejora el rendimiento e integración entre la máquina anfitriona y las máquinas virtuales.
 
----
+
 
 ## 2. Configuración y Creación de las Máquinas Virtuales
 
@@ -71,7 +71,7 @@ vagrant init
 
 Este comando generará un archivo llamado `Vagrantfile`, que deberá modificar con el siguiente contenido.
 
----
+
 
 ## 3. Contenido del Archivo `Vagrantfile`
 
@@ -110,7 +110,7 @@ Este archivo define dos máquinas virtuales:
 
 Ambas instanciadas a partir del box `bento/ubuntu-22.04`.
 
----
+
 
 ## 4. Arranque y Acceso a las Máquinas
 
@@ -132,4 +132,4 @@ o
 vagrant ssh clienteUbuntu
 ```
 
----
+
