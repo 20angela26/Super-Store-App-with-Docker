@@ -465,3 +465,39 @@ Ajuste el número de réplicas en el archivo docker-compose.yml y redespiegue:
 
     docker-compose up -d --scale [nombre_servicio]=[cantidad_deseada]
 
+###  Despliegue con Docker Swarm
+Este proyecto está diseñado para ejecutarse también en un entorno de clúster utilizando Docker Swarm, lo cual permite escalar los servicios, distribuir la carga entre varios nodos y lograr alta disponibilidad. A continuación, se describe el proceso para inicializar el clúster, agregar nodos y desplegar los servicios definidos en el archivo docker-compose.yml.
+
+**Inicializar el clúster Swarm**
+En el nodo principal (manager), ejecute el siguiente comando para inicializar el clúster:
+
+
+    docker swarm init
+Este comando devolverá una línea con un token que se usará para unir los nodos trabajadores al clúster. Guárdelo o cópielo.
+
+  **Agregar nodos al clúster**
+En cada nodo trabajador, ejecute el comando que le indicó el nodo manager. El comando tiene una estructura como esta:
+
+    docker swarm join --token <TOKEN> <IP_DEL_MANAGER>
+
+Esto conectará el nodo al clúster como trabajador (worker). También puede agregar más managers si lo desea para mayor disponibilidad.
+
+**Verificar los nodos en el clúster**
+En el nodo manager, ejecute:
+    
+        docker node ls
+
+Este comando muestra todos los nodos que forman parte del clúster y su estado actual.
+
+##### Desplegar la aplicación con Docker Swarm
+Una vez todos los nodos estén conectados, puede desplegar la aplicación ejecutando en el nodo manager:
+
+
+    docker stack deploy -c docker-compose.yml super-store
+
+Esto iniciará todos los servicios definidos en el archivo docker-compose.yml como parte de una pila (stack) llamada superstore.
+
+**Comprobar los servicios desplegados**
+Para verificar que los servicios estén corriendo correctamente, utilice:
+
+    docker service ls
