@@ -501,3 +501,366 @@ Esto iniciará todos los servicios definidos en el archivo docker-compose.yml co
 Para verificar que los servicios estén corriendo correctamente, utilice:
 
     docker service ls
+
+
+
+```bash
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import sum, col, desc, to_date, year, trim, month, when, mean
+from pyspark.sql.types import DoubleType
+import os
+import json
+
+# Rutas
+INPUT_PATH = "/root/labSpark/dataset/sampleSuperstore.csv"
+OUTPUT_PATH = "/root/resultados.txt"
+JSON_OUTPUT_PATH = "/root/server/respuestas.json"
+
+def initialize_spark(app_name):
+    return SparkSession.builder \
+        .appName(app_name) \
+        .config("spark.driver.memory", "4g") \
+        .getOrCreate()
+
+def load_and_prepare_data(spark, input_path):
+    df = spark.read \
+        .option("header", "true") \
+        .option("inferSchema", "true") \
+        .option("encoding", "ISO-8859-1") \
+        .csv(input_path)
+
+    # Conversión y limpieza de columnas
+    df = df.withColumn("Sales", trim(col("Sales")).cast("double"))
+    df = df.withColumn("Profit", trim(col("Profit")).cast("double"))
+    df = df.withColumn("Discount", trim(col("Discount")).cast("double"))
+    df = df.withColumn("Quantity", trim(col("Quantity")).cast("int"))
+
+    # Formateo de fecha
+    df = df.withColumn("Order Date", to_date(col("Order Date"), "M/d/yyyy"))
+    df = df.withColumn("Year", year(col("Order Date")))
+
+    # Cálculo de precio con descuento
+    df = df.withColumn("Total Discounted Sales", col("Sales") * (1 - col("Discount")))
+
+    # Cálculo de temporada
+    df = df.withColumn("Temporada", when(col("Order Date").between('12-01', '02-28'), 'Invierno')
+                                    .when(col("Order Date").between('06-01', '08-31'), 'Verano')
+                                    .otherwise('Otoño/Primavera'))
+
+    df.cache()
+    return df
+
+def analyze_ventas_1(df, output_file):
+    resultados = {}
+    with open(output_file, "w", encoding="utf-8") as f:
+        # 1. Producto más vendido por valor
+        ventas_producto = df.groupBy("Product Name").agg(sum("Sales").alias("TotalVentas"))
+        producto_top_ventas = ventas_producto.orderBy(desc("TotalVentas")).first()
+        if producto_top_ventas:
+            f.write(f"\n🔝 [1] Producto más vendido (valor): {producto_top_ventas['Product Name']}\n")
+            f.write(f"💰 Ventas totales: ${producto_top_ventas['TotalVentas']:,.2f}\n")
+            resultados["producto_mas_vendido_valor"] = {
+                "producto": producto_top_ventas['Product Name'],
+                "ventas_totales": round(producto_top_ventas['TotalVentas'], 2)
+            }
+
+        # 2. Producto con más unidades vendidas
+        cantidad_producto = df.groupBy("Product Name").agg(sum("Quantity").alias("TotalUnidades"))
+        producto_top_unidades = cantidad_producto.orderBy(desc("TotalUnidades")).first()
+        if producto_top_unidades:
+            f.write(f"\n📦 [2] Producto más vendido (unidades): {producto_top_unidades['Product Name']}\n")
+            f.write(f"📊 Unidades vendidas: {producto_top_unidades['TotalUnidades']}\n")
+            resultados["producto_mas_vendido_unidades"] = {
+                "producto": producto_top_unidades['Product Name'],
+                "unidades_vendidas": int(producto_top_unidades['TotalUnidades'])
+            }
+
+        # 3. Producto más rentable
+        ganancia_producto = df.groupBy("Product Name").agg(sum("Profit").alias("TotalGanancia"))
+        producto_top_ganancia = ganancia_producto.orderBy(desc("TotalGanancia")).first()
+        if producto_top_ganancia:
+            f.write(f"\n💰 [3] Producto más rentable: {producto_top_ganancia['Product Name']}\n")
+            f.write(f"💵 Ganancia total: ${producto_top_ganancia['TotalGanancia']:,.2f}\n")
+            resultados["producto_mas_rentable"] = {
+                "producto": producto_top_ganancia['Product Name'],
+                "ganancia_total": round(producto_top_ganancia['TotalGanancia'], 2)
+            }
+
+        # 4. Ciudad con más ventas
+        ventas_ciudad = df.groupBy("City").agg(sum("Sales").alias("TotalVentas"))
+        ciudad_top = ventas_ciudad.orderBy(desc("TotalVentas")).first()
+        if ciudad_top:
+            f.write(f"\n🏙️ [4] Ciudad con más ventas: {ciudad_top['City']}\n")
+            f.write(f"💰 Ventas totales: ${ciudad_top['TotalVentas']:,.2f}\n")
+            resultados["ciudad_mas_ventas"] = {
+                "ciudad": ciudad_top['City'],
+                "ventas_totales": round(ciudad_top['TotalVentas'], 2)
+            }
+
+        # 5 y 6. Año con menos y más ventas
+        ventas_ano = df.groupBy("Year").agg(sum("Sales").alias("TotalVentas"))
+        ano_min = ventas_ano.orderBy("TotalVentas").first()
+        ano_max = ventas_ano.orderBy(desc("TotalVentas")).first()
+        if ano_min:
+            f.write(f"\n📉 [5] Año con menos ventas: {ano_min['Year']}\n")
+            f.write(f"💰 Ventas totales: ${ano_min['TotalVentas']:,.2f}\n")
+            resultados["ano_menos_ventas"] = {
+                "ano": int(ano_min['Year']),
+                "ventas_totales": round(ano_min['TotalVentas'], 2)
+            }
+        if ano_max:
+            f.write(f"\n📈 [6] Año con más ventas: {ano_max['Year']}\n")
+            f.write(f"💰 Ventas totales: ${ano_max['TotalVentas']:,.2f}\n")
+            resultados["ano_mas_ventas"] = {
+                "ano": int(ano_max['Year']),
+                "ventas_totales": round(ano_max['TotalVentas'], 2)
+            }
+
+    return resultados
+
+def analyze_ventas_2(df, output_file):
+    resultados = {}
+    with open(output_file, "a", encoding="utf-8") as f:
+        f.write("\n" + "="*60 + "\n")
+        f.write("=== ANÁLISIS DE VENTAS ===\n")
+
+        # Filtrar filas con descuento válido
+        df_valid_descuento = df.filter(
+            (col("Discount").cast(DoubleType()).isNotNull()) &
+            (col("Discount") > 0) &
+            (col("Sales").cast(DoubleType()).isNotNull())
+        )
+
+        # 7. Producto con mayor descuento
+        if df_valid_descuento.count() > 0:
+            max_descuento = df_valid_descuento.orderBy(desc("Discount")).first()
+            f.write(f"\n🎉 [7] Producto con mayor descuento: {max_descuento['Product Name']}\n")
+            f.write(f"💰 Precio original: ${float(max_descuento['Sales']):,.2f}\n")
+            f.write(f"💸 Descuento aplicado: {float(max_descuento['Discount']) * 100:.0f}%\n")
+            f.write(f"🛍️ Precio con descuento: ${float(max_descuento['Total Discounted Sales']):,.2f}\n")
+            resultados["producto_mayor_descuento"] = {
+                "producto": max_descuento['Product Name'],
+                "precio_original": round(float(max_descuento['Sales']), 2),
+                "descuento_porcentaje": round(float(max_descuento['Discount']) * 100, 0),
+                "precio_con_descuento": round(float(max_descuento['Total Discounted Sales']), 2)
+            }
+        else:
+            f.write("\n🎉 [7] No se encontraron productos con descuento aplicable\n")
+            resultados["producto_mayor_descuento"] = {
+                "mensaje": "No se encontraron productos con descuento aplicable"
+            }
+
+        # 8. Producto con menor descuento
+        if df_valid_descuento.count() > 0:
+            min_descuento = df_valid_descuento.orderBy("Discount").first()
+            f.write(f"\n  [8] Producto con menor descuento: {min_descuento['Product Name']}\n")
+            f.write(f"📦 Unidades vendidas: {min_descuento['Quantity']}\n")
+            f.write(f"💸 Descuento aplicado: {float(min_descuento['Discount']) * 100:.0f}%\n")
+            resultados["producto_menor_descuento"] = {
+                "producto": min_descuento['Product Name'],
+                "unidades_vendidas": int(min_descuento['Quantity']),
+                "descuento_porcentaje": round(float(min_descuento['Discount']) * 100, 0)
+            }
+        else:
+            f.write("\n  [8] No se encontraron productos con descuento mayor a cero\n")
+            resultados["producto_menor_descuento"] = {
+                "mensaje": "No se encontraron productos con descuento mayor a cero"
+            }
+
+        # 9. Top 5 productos por cantidad vendida
+        top5_cantidad = df_valid_descuento.groupBy("Product Name") \
+            .agg(mean("Discount").alias("DescuentoPromedio"),
+                 sum("Quantity").alias("TotalUnidades"),
+                 sum("Sales").alias("TotalVentas")) \
+            .orderBy(desc("TotalUnidades")) \
+            .limit(5)
+
+        f.write("\n🔍 [9] Top 5 productos por cantidad vendida:\n")
+        top5_list = []
+        for row in top5_cantidad.collect():
+            f.write(f"Producto: {row['Product Name']}, Unidades: {row['TotalUnidades']}, "
+                    f"Ventas: ${float(row['TotalVentas']):,.2f}, "
+                    f"Descuento Promedio: {float(row['DescuentoPromedio']) * 100:.2f}%\n")
+            top5_list.append({
+                "producto": row['Product Name'],
+                "unidades": int(row['TotalUnidades']),
+                "ventas": round(float(row['TotalVentas']), 2),
+                "descuento_promedio_porcentaje": round(float(row['DescuentoPromedio']) * 100, 2)
+            })
+        resultados["top5_productos_cantidad"] = top5_list
+
+        # 10. Cliente que más compró
+        cliente_top = df_valid_descuento.groupBy("Customer Name", "City") \
+            .agg(sum("Sales").alias("TotalCompras")) \
+            .orderBy(desc("TotalCompras")) \
+            .first()
+
+        if cliente_top:
+            f.write(f"\n👤 [10] Cliente que más compró: {cliente_top['Customer Name']}\n")
+            f.write(f"🏙️ Ciudad: {cliente_top['City']}\n")
+            f.write(f"💰 Total comprado: ${float(cliente_top['TotalCompras']):,.2f}\n")
+            resultados["cliente_mas_compro"] = {
+                "cliente": cliente_top['Customer Name'],
+                "ciudad": cliente_top['City'],
+                "total_comprado": round(float(cliente_top['TotalCompras']), 2)
+            }
+        else:
+            f.write("\n👤 [10] No se encontraron datos para el cliente que más compró\n")
+            resultados["cliente_mas_compro"] = {
+                "mensaje": "No se encontraron datos para el cliente que más compró"
+            }
+
+        # 11. Producto más rentable
+        producto_rentable = df_valid_descuento.groupBy("Product Name") \
+            .agg(sum("Profit").alias("TotalGanancia")) \
+            .orderBy(desc("TotalGanancia")) \
+            .first()
+
+        if producto_rentable:
+            f.write(f"\n💰 [11] Producto más rentable: {producto_rentable['Product Name']}\n")
+            f.write(f"💵 Ganancia total: ${float(producto_rentable['TotalGanancia']):,.2f}\n")
+            resultados["producto_mas_rentable"] = {
+                "producto": producto_rentable['Product Name'],
+                "ganancia_total": round(float(producto_rentable['TotalGanancia']), 2)
+            }
+        else:
+            f.write("\n💰 [11] No se encontraron datos para el producto más rentable\n")
+            resultados["producto_mas_rentable"] = {
+                "mensaje": "No se encontraron datos para el producto más rentable"
+            }
+
+    return resultados
+
+def analyze_ventas_3(df, output_file):
+    resultados = {}
+    with open(output_file, "a", encoding="utf-8") as f:
+        f.write("\n" + "="*60 + "\n")
+        f.write("=== ANÁLISIS ADICIONAL ===\n")
+
+        # 12. Mes con más ventas
+        ventas_por_mes = df.groupBy(month("Order Date").alias("Month")) \
+                           .agg(sum("Sales").alias("TotalVentas")) \
+                           .orderBy(desc("TotalVentas"))
+        mes_top = ventas_por_mes.first()
+        if mes_top:
+            resultado_mes = f"Mes {mes_top['Month']} con ${mes_top['TotalVentas']:,.2f}"
+            f.write(f"\n🗓️ [12] Mes con más ventas: {resultado_mes}\n")
+            resultados["mes_con_mas_ventas"] = {
+                "mes": int(mes_top['Month']),
+                "total_ventas": round(mes_top['TotalVentas'], 2)
+            }
+
+        # 13. Temporada con más ventas
+        ventas_por_temporada = df.groupBy("Temporada") \
+                                 .agg(sum("Sales").alias("TotalVentas")) \
+                                 .orderBy(desc("TotalVentas"))
+        temporada_top = ventas_por_temporada.first()
+        if temporada_top:
+            f.write(f"\n🌞 [13] Temporada con más ventas: {temporada_top['Temporada']}\n")
+            f.write(f"💰 Ventas totales: ${temporada_top['TotalVentas']:,.2f}\n")
+            resultados["temporada_con_mas_ventas"] = {
+                "temporada": temporada_top['Temporada'],
+                "total_ventas": round(temporada_top['TotalVentas'], 2)
+            }
+
+        # 14. Ciudad con más ventas
+        ventas_por_ciudad = df.groupBy("City") \
+                              .agg(sum("Sales").alias("TotalVentas")) \
+                              .orderBy(desc("TotalVentas"))
+        ciudad_top = ventas_por_ciudad.first()
+        if ciudad_top:
+            f.write(f"\n🏙️ [14] Ciudad con más ventas: {ciudad_top['City']}\n")
+            f.write(f"💰 Ventas totales: ${ciudad_top['TotalVentas']:,.2f}\n")
+            resultados["ciudad_con_mas_ventas"] = {
+                "ciudad": ciudad_top['City'],
+                "total_ventas": round(ciudad_top['TotalVentas'], 2)
+            }
+
+        # 15. Productos con ganancia negativa
+        productos_negativos = df.filter(col("Profit") < 0)
+        productos_negativos_detalle = productos_negativos.select("Product Name", "Order Date", "Profit")
+        productos_negativos_list = []
+        for row in productos_negativos_detalle.limit(5).collect():
+            f.write(f"\n❌ Producto con ganancia negativa: {row['Product Name']} | Ganancia: ${row['Profit']:,.2f} | Fecha: {row['Order Date']}\n")
+            productos_negativos_list.append({
+                "producto": row['Product Name'],
+                "ganancia": round(row['Profit'], 2),
+                "fecha": str(row['Order Date'])
+            })
+        resultados["productos_con_ganancia_negativa"] = productos_negativos_list
+
+        # 16. Región con mayor descuento promedio
+        descuento_por_region = df.groupBy("Region") \
+                                 .agg(sum("Discount").alias("PromedioDescuento")) \
+                                 .orderBy(desc("PromedioDescuento"))
+        region_top_descuento = descuento_por_region.first()
+        if region_top_descuento:
+            f.write(f"\n💸 [16] Región con mayor descuento promedio: {region_top_descuento['Region']}\n")
+            f.write(f"📉 Promedio de descuento: {region_top_descuento['PromedioDescuento']:.2f}\n")
+            resultados["region_con_mayor_descuento"] = {
+                "region": region_top_descuento['Region'],
+                "promedio_descuento": round(region_top_descuento['PromedioDescuento'], 2)
+            }
+
+        # 17. Región con más unidades vendidas
+        ventas_por_region = df.groupBy("Region") \
+                              .agg(sum("Quantity").alias("TotalUnidades")) \
+                              .orderBy(desc("TotalUnidades"))
+        region_top_unidades = ventas_por_region.first()
+        if region_top_unidades:
+            f.write(f"\n📦 [17] Región con más unidades vendidas: {region_top_unidades['Region']}\n")
+            f.write(f"📊 Unidades vendidas: {region_top_unidades['TotalUnidades']}\n")
+            resultados["region_con_mas_unidades"] = {
+                "region": region_top_unidades['Region'],
+                "total_unidades": int(region_top_unidades['TotalUnidades'])
+            }
+
+        # 18. Categoría con más ventas
+        ventas_por_categoria = df.groupBy("Category") \
+                                 .agg(sum("Sales").alias("TotalVentas")) \
+                                 .orderBy(desc("TotalVentas"))
+        categoria_top = ventas_por_categoria.first()
+        if categoria_top:
+            f.write(f"\n📊 [18] Categoría con más ventas: {categoria_top['Category']}\n")
+            f.write(f"💰 Ventas totales: ${categoria_top['TotalVentas']:,.2f}\n")
+            resultados["categoria_con_mas_ventas"] = {
+                "categoria": categoria_top['Category'],
+                "total_ventas": round(categoria_top['TotalVentas'], 2)
+            }
+
+    return resultados
+
+def main():
+    # Crear la carpeta /root/server/ si no existe
+    os.makedirs(os.path.dirname(JSON_OUTPUT_PATH), exist_ok=True)
+
+    # Eliminar archivos de salida si existen
+    if os.path.exists(OUTPUT_PATH):
+        os.remove(OUTPUT_PATH)
+    if os.path.exists(JSON_OUTPUT_PATH):
+        os.remove(JSON_OUTPUT_PATH)
+
+    spark = initialize_spark("AnalisisVentasCompleto")
+    df = load_and_prepare_data(spark, INPUT_PATH)
+
+    try:
+        # Ejecutar análisis y combinar resultados
+        resultados = {}
+        resultados.update(analyze_ventas_1(df, OUTPUT_PATH))
+        resultados.update(analyze_ventas_2(df, OUTPUT_PATH))
+        resultados.update(analyze_ventas_3(df, OUTPUT_PATH))
+
+        # Guardar resultados en JSON
+        with open(JSON_OUTPUT_PATH, "w", encoding="utf-8") as json_file:
+            json.dump([resultados], json_file, ensure_ascii=False, indent=4)
+
+        print(f"✅ Análisis completado. Resultados guardados en: {OUTPUT_PATH}")
+        print(f"✅ Resultados en JSON guardados en: {JSON_OUTPUT_PATH}")
+
+    finally:
+        df.unpersist()
+        spark.stop()
+
+if __name__ == "__main__":
+    main()
+                                                                                                                                                                            ```                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   ~                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               ~                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               ~                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               ~                                                                                                                
